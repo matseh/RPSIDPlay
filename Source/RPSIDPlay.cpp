@@ -231,8 +231,6 @@ void RPSIDPlay::loadFile(RPSIDPlayLoadFileRequestContent *requestContent)
  
     if(m_tune && m_tune->getStatus())
     {
-        success = TRUE;
-
         const SidTuneInfo *tuneInfo = m_tune->getInfo();
 
         responseContent->songCount    = tuneInfo->songs();
@@ -609,52 +607,61 @@ void RPSIDPlay::getSongInfo(RPSIDPlayGetSongInfoRequestContent *requestContent)
 
     RPSIDPlayGetSongInfoResponseContent *responseContent = (RPSIDPlayGetSongInfoResponseContent *) RPIPCMessageContent(m_response);
 
-    const SidTuneInfo *tuneInfo = m_tune->getInfo(requestContent->subsong);
-
-    RPIPCMessageSetID(m_response, RPSIDPlayMessageIDGetSongInfoResponse);
-    RPIPCMessageSetContentLength(m_response, sizeof(RPSIDPlayGetSongInfoResponseContent));
-
-    if(tuneInfo)
+    if(!m_tune)
     {
-        responseContent->loadAddress        = tuneInfo->loadAddr();
-        responseContent->initAddress        = tuneInfo->initAddr();
-        responseContent->playAddress        = tuneInfo->playAddr();
-        responseContent->sidCount           = tuneInfo->sidChips();
-        responseContent->infoStringCount    = tuneInfo->numberOfInfoStrings();
-        responseContent->commentStringCount = tuneInfo->numberOfCommentStrings();
-        responseContent->compatibility      = convertCompatibility(tuneInfo->compatibility());
-        responseContent->songSpeed          = convertSongSpeed(tuneInfo->songSpeed());
-        responseContent->clockSpeed         = convertClockSpeed(tuneInfo->clockSpeed());
-
-        for(unsigned int sidIndex = 0; success && (sidIndex < responseContent->sidCount); sidIndex++)
-        {
-            RPSIDInfo sidInfo =
-            {
-                .baseAddress = tuneInfo->sidChipBase(sidIndex),
-                .model       = tuneInfo->sidModel(sidIndex)
-            };
-            
-            success = RPIPCMessageWriteBlob(m_response, &sidInfo, sizeof(sidInfo));
-        }
+        std::cerr << "RPSIDPlay: getSongInfo() called when no file is loaded.\n";
         
-        for(unsigned int stringIndex = 0; success && (stringIndex < responseContent->infoStringCount); stringIndex++)
-        {
-            success = RPIPCMessageWriteString(m_response, tuneInfo->infoString(stringIndex));
-        }
-
-        for(unsigned int stringIndex = 0; success && (stringIndex < responseContent->commentStringCount); stringIndex++)
-        {
-            success = RPIPCMessageWriteString(m_response, tuneInfo->commentString(stringIndex));
-        }
-
-        if(success)
-        {
-            success = RPIPCMessageWriteString(m_response, tuneInfo->formatString());
-        }
+        success = FALSE;
     }
     else
     {
-        success = FALSE;
+        const SidTuneInfo *tuneInfo = m_tune->getInfo(requestContent->subsong);
+
+        RPIPCMessageSetID(m_response, RPSIDPlayMessageIDGetSongInfoResponse);
+        RPIPCMessageSetContentLength(m_response, sizeof(RPSIDPlayGetSongInfoResponseContent));
+
+        if(tuneInfo)
+        {
+            responseContent->loadAddress        = tuneInfo->loadAddr();
+            responseContent->initAddress        = tuneInfo->initAddr();
+            responseContent->playAddress        = tuneInfo->playAddr();
+            responseContent->sidCount           = tuneInfo->sidChips();
+            responseContent->infoStringCount    = tuneInfo->numberOfInfoStrings();
+            responseContent->commentStringCount = tuneInfo->numberOfCommentStrings();
+            responseContent->compatibility      = convertCompatibility(tuneInfo->compatibility());
+            responseContent->songSpeed          = convertSongSpeed(tuneInfo->songSpeed());
+            responseContent->clockSpeed         = convertClockSpeed(tuneInfo->clockSpeed());
+
+            for(unsigned int sidIndex = 0; success && (sidIndex < responseContent->sidCount); sidIndex++)
+            {
+                RPSIDInfo sidInfo =
+                {
+                    .baseAddress = tuneInfo->sidChipBase(sidIndex),
+                    .model       = tuneInfo->sidModel(sidIndex)
+                };
+                
+                success = RPIPCMessageWriteBlob(m_response, &sidInfo, sizeof(sidInfo));
+            }
+            
+            for(unsigned int stringIndex = 0; success && (stringIndex < responseContent->infoStringCount); stringIndex++)
+            {
+                success = RPIPCMessageWriteString(m_response, tuneInfo->infoString(stringIndex));
+            }
+
+            for(unsigned int stringIndex = 0; success && (stringIndex < responseContent->commentStringCount); stringIndex++)
+            {
+                success = RPIPCMessageWriteString(m_response, tuneInfo->commentString(stringIndex));
+            }
+
+            if(success)
+            {
+                success = RPIPCMessageWriteString(m_response, tuneInfo->formatString());
+            }
+        }
+        else
+        {
+            success = FALSE;
+        }
     }
 
     responseContent->success = success;
@@ -668,7 +675,13 @@ void RPSIDPlay::playSong(RPSIDPlayPlaySongRequestContent *requestContent)
 
     unsigned int subsong = requestContent->subsong;
 
-    if(subsong != m_tune->selectSong(subsong))
+    if(!m_tune)
+    {
+        std::cerr << "RPSIDPlay: playSong() called when no file is loaded.\n";
+        
+        success = FALSE;
+    }
+    else if(subsong != m_tune->selectSong(subsong))
     {
         std::cerr << "RPSIDPlay: Failed to select subsong: " << subsong << std::endl;
 
