@@ -143,11 +143,11 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				$BUILD_DIR/libsidplayfp/lib/libsidplayfp.a,
+				$DERIVED_FILES_DIR/libsidplayfp/lib/libsidplayfp.a,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export CFLAGS=\"-O -g -isysroot $SDKROOT -arch x86_64 -arch arm64\"\nexport LDFLAGS=\"-arch x86_64 -arch arm64\"\nmkdir -p \"$BUILD_DIR/libsidplayfp/build\"\ncd \"$BUILD_DIR/libsidplayfp/build\"\n\"$PROJECT_DIR/Source/libsidplayfp/configure\" \"--prefix=$BUILD_DIR/libsidplayfp\"\nmake\nmake install\n";
+			shellScript = "export CXXFLAGS=\"-O -g -isysroot $SDKROOT -arch x86_64 -arch arm64\"\nexport LDFLAGS=\"-arch x86_64 -arch arm64\"\nmkdir -p \"$DERIVED_FILES_DIR/libsidplayfp/build\"\ncd \"$DERIVED_FILES_DIR/libsidplayfp/build\"\n\"$PROJECT_DIR/Source/libsidplayfp/configure\" \"--prefix=$DERIVED_FILES_DIR/libsidplayfp\"\nmake\nmake install\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -284,8 +284,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 37X379TU43;
 				ENABLE_HARDENED_RUNTIME = YES;
-				HEADER_SEARCH_PATHS = "$(BUILD_DIR)/libsidplayfp/include";
-				LIBRARY_SEARCH_PATHS = "$(BUILD_DIR)/libsidplayfp/lib";
+				HEADER_SEARCH_PATHS = "$(DERIVED_FILES_DIR)/libsidplayfp/include";
+				LIBRARY_SEARCH_PATHS = "$(DERIVED_FILES_DIR)/libsidplayfp/lib";
 				OTHER_LDFLAGS = "-lsidplayfp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -298,8 +298,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 37X379TU43;
 				ENABLE_HARDENED_RUNTIME = YES;
-				HEADER_SEARCH_PATHS = "$(BUILD_DIR)/libsidplayfp/include";
-				LIBRARY_SEARCH_PATHS = "$(BUILD_DIR)/libsidplayfp/lib";
+				HEADER_SEARCH_PATHS = "$(DERIVED_FILES_DIR)/libsidplayfp/include";
+				LIBRARY_SEARCH_PATHS = "$(DERIVED_FILES_DIR)/libsidplayfp/lib";
 				OTHER_LDFLAGS = "-lsidplayfp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
