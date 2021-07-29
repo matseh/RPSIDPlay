@@ -147,7 +147,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export CXXFLAGS=\"-O -g -isysroot $SDKROOT -arch x86_64 -arch arm64\"\nexport LDFLAGS=\"-arch x86_64 -arch arm64\"\nmkdir -p \"$DERIVED_FILES_DIR/libsidplayfp/build\"\ncd \"$DERIVED_FILES_DIR/libsidplayfp/build\"\n\"$PROJECT_DIR/Source/libsidplayfp/configure\" \"--prefix=$DERIVED_FILES_DIR/libsidplayfp\"\nmake\nmake install\n";
+			shellScript = "export CXXFLAGS=\"-O -g -isysroot $SDKROOT -arch x86_64 -arch arm64\"\nexport LDFLAGS=\"-arch x86_64 -arch arm64\"\nmkdir -p \"$DERIVED_FILES_DIR/libsidplayfp/build\"\ncd \"$DERIVED_FILES_DIR/libsidplayfp/build\"\n\"$PROJECT_DIR/Source/libsidplayfp/configure\" \"--prefix=$DERIVED_FILES_DIR/libsidplayfp\"  --enable-static --disable-shared\nmake\nmake install\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
